@@ -36,4 +36,8 @@ Funcția so_ferror returnează valoarea actuală a flagului de error.
 Funcția so_popen deschide un pipe materializat printr-un fișier între procesul părinte și cel copil. Am detaliat implementarea prin comentarii în so_stdio.c pentru Linux.
 
 Funcția so_pclose închide fișierul folosit ca pipe.
+
+*** Linux
+	În functia so_ferror am comentat acea structura pentru că în verificarea cu checkerul execuția nu se mai oprește.
+	De asemenea, testul test_popen_write nu se mai oprește din execuție, iar valgrind --leak-check=full îmi indică o încheiere cu SIGPIPE. 
  
