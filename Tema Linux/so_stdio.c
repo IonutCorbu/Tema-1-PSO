@@ -377,13 +377,13 @@ SO_FILE* so_popen(const char* command, const char* type)
         {
             close(fd[0]);//daca in procesul parinte citesc,in procesul copil scriu, deci pot inchide capatul de citire din copil
             dup2(fd[1], STDOUT_FILENO);//stdout va fi inlocuit de file descriptorul corespunzator pentru capatul pipeului de write
-            //close(fd[1]);//putem inchide intrarea din fdt corespunzatoare capatului de scriere pentru ca am copiat in stdout
+            close(fd[1]);//putem inchide intrarea din fdt corespunzatoare capatului de scriere pentru ca am copiat in stdout
         }
         else if (strcmp(type, "w") == 0)
         {
             close(fd[1]);//daca in procesul parinte scriu, in procesul copil citesc, deci pot inchide capatul de scriere din copil
             dup2(fd[0], STDIN_FILENO);//stdin va fi inlocuit de file descriptorul corespunzator pentru capatul pipeului de scriere
-            //close(fd[0]);//putem inchide intrarea din fdt corespunzatoare capatului de citire pentru ca am copiat in stdin
+            close(fd[0]);//putem inchide intrarea din fdt corespunzatoare capatului de citire pentru ca am copiat in stdin
         }
         execl("/bin/bash", "sh", "-c", command, NULL);//executam comanda in bash
         exit(1);
@@ -409,17 +409,13 @@ SO_FILE* so_popen(const char* command, const char* type)
 }
 int so_pclose(SO_FILE* stream)
 {
-   
+    if (!stream)
+        return -1;
+    int pid_to_wait = stream->child;
+    so_fclose(stream);
     int status;
-    int ret = waitpid(stream->child, &status, 0);
-    if (ret < 0)
-    {
-        so_fclose(stream);
-        return SO_EOF;
-    }
-    ret = so_fclose(stream);
-    if (ret < 0)
-        return SO_EOF;
+    if (waitpid(pid_to_wait, &status, 0) == -1)
+        return -1;
     return status;
 }
 
