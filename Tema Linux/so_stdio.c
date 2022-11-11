@@ -16,7 +16,7 @@ struct _so_file
     int _error;//daca intalnesc vreo eroare
     int PosInFile;//cursor
     int PosInBuffer;//cat am ocupat din buffer;
-    int bytes;
+    int bytes;//cati bytes citesc (cel mult 4096 odata)
     char lastOp[200];//ultima operatie pentru a sti daca este nevoie sa facem so_fflush sau so_fseek
     pid_t child;//pid-ul procesului copil creat dupa so_popen
 };
